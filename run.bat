@@ -1,4 +1,7 @@
 @echo off
+rem Prepend common MSYS2 / MinGW / vcpkg binary directories and local build folders to PATH
+set PATH=C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\msys64\clang64\bin;C:\MinGW\bin;%CD%\build;%CD%\build\Release;%CD%\build\Debug;%PATH%
+
 echo === Building Aengine 3D Game Engine ===
 cmake -B build
 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
@@ -6,20 +9,12 @@ if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 cmake --build build --config Release
 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
-rem Prepend build output folders and standard MSYS2 / MinGW bin paths to PATH
-set PATH=%CD%\build;%CD%\build\Release;%CD%\build\Debug;C:\msys64\mingw64\bin;C:\MinGW\bin;%PATH%
-
-rem Copy any DLLs from build root or common MinGW/MSYS2 locations if available
-for %%D in (C:\msys64\mingw64\bin C:\MinGW\bin) do (
-    if exist "%%D\glew32.dll" (
-        if exist build\Release xcopy /y /d "%%D\glew32.dll" build\Release\ >nul 2>&1
-        if exist build\Debug xcopy /y /d "%%D\glew32.dll" build\Debug\ >nul 2>&1
-        if exist build xcopy /y /d "%%D\glew32.dll" build\ >nul 2>&1
-    )
-    if exist "%%D\glfw3.dll" (
-        if exist build\Release xcopy /y /d "%%D\glfw3.dll" build\Release\ >nul 2>&1
-        if exist build\Debug xcopy /y /d "%%D\glfw3.dll" build\Debug\ >nul 2>&1
-        if exist build xcopy /y /d "%%D\glfw3.dll" build\ >nul 2>&1
+rem Automatically copy dynamic libraries from toolchain bin directories to output folder
+for %%D in (C:\msys64\mingw64\bin C:\msys64\ucrt64\bin C:\msys64\clang64\bin C:\MinGW\bin) do (
+    if exist "%%D" (
+        if exist build\Release xcopy /y /d "%%D\*.dll" build\Release\ >nul 2>&1
+        if exist build\Debug xcopy /y /d "%%D\*.dll" build\Debug\ >nul 2>&1
+        if exist build xcopy /y /d "%%D\*.dll" build\ >nul 2>&1
     )
 )
 
