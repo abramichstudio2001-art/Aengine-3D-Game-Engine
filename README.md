@@ -2,6 +2,8 @@
 
 A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLEW, GLM, and Dear ImGui.
 
+![Engine Screenshot](screenshot.png)
+
 ---
 
 ## Features
