@@ -11,6 +11,7 @@ A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLEW, 
 - **Camera Subsystem**: 3D perspective camera with view/projection matrix generation and movement controls.
 - **Minimal User Interface**: Simple ImGui overlay displaying an FPS counter and nothing else.
 - **Clean Architecture**: Modular C++ design separating Windowing, Camera, Shaders, Geometry Meshes, Renderer, and UI.
+- **One-Click Launch Scripts**: Convenient `run.sh` and `run.bat` scripts to build and run automatically.
 - **Offscreen Verification Support**: Command-line support for offscreen headless rendering and frame screenshot capture.
 
 ---
@@ -20,6 +21,8 @@ A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLEW, 
 ```text
 ├── CMakeLists.txt        # CMake build configuration
 ├── README.md             # Documentation
+├── run.sh                # Linux / macOS build and run script
+├── run.bat               # Windows build and run script
 ├── shaders/              # GLSL shader files
 │   ├── default.vert      # Vertex shader (positions, normals, perspective projection)
 │   └── default.frag      # Fragment shader (Phong lighting & platform grid shader)
@@ -44,9 +47,27 @@ sudo apt-get install -y build-essential cmake libglfw3-dev libglew-dev libglm-de
 
 ---
 
-## Building the Engine
+## Quick Start (Run Scripts)
 
-To build the 3D game engine, configure and compile with CMake:
+You can build and launch the engine with a single command:
+
+### Linux / macOS
+
+```bash
+./run.sh
+```
+
+### Windows
+
+```cmd
+run.bat
+```
+
+---
+
+## Manual Building & Running
+
+If you prefer using CMake manually:
 
 ```bash
 # Configure CMake
@@ -54,21 +75,14 @@ cmake -B build
 
 # Build the executable
 cmake --build build
-```
 
-The compiled executable binary `Aengine3D` will be placed in the `build/` directory.
-
----
-
-## Running the Engine
-
-Run the compiled executable:
-
-```bash
+# Run the engine
 ./build/Aengine3D
 ```
 
-### Controls
+---
+
+## Controls & Usage
 
 - **W / A / S / D**: Move camera horizontally (forward, left, backward, right)
 - **E / Q**: Move camera vertically (up / down)
@@ -79,7 +93,7 @@ Run the compiled executable:
 To run the engine in a headless environment (or capture an automated screenshot):
 
 ```bash
-LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./build/Aengine3D --screenshot screenshot.png
+LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./run.sh --screenshot screenshot.png
 ```
 
 ---
