@@ -1,6 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include <glad/glad.h>
 #include "core/Window.h"
 #include "core/Camera.h"
 #include "renderer/Renderer.h"
@@ -31,6 +32,7 @@ private:
     UI ui;
 
     std::unique_ptr<Shader> shader;
+    std::unique_ptr<Shader> shadowShader;
     std::unique_ptr<Mesh> platformMesh;
     std::unique_ptr<Mesh> cubeMesh;
 

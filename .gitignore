@@ -1,6 +1,15 @@
-build/
-*.png
-*.o
-*.a
-*.so
-.DS_Store
+# Build directory
+build/*
+!build/Aengine3D
+!build/Aengine3D.exe
+!build/Release/
+!build/Release/Aengine3D.exe
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.user
+
+# Keep screenshot.png for README documentation
+!screenshot.png
