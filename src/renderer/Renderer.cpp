@@ -1,8 +1,8 @@
 #include "renderer/Renderer.h"
 
 Renderer::Renderer()
-    : lightPos(glm::vec3(5.0f, 9.0f, 5.0f)),
-      lightColor(glm::vec3(1.0f, 0.98f, 0.92f)),
+    : lightPos(glm::vec3(6.5f, 11.0f, 5.5f)),
+      lightColor(glm::vec3(1.0f, 0.97f, 0.88f)),
       shadowMap(2048, 2048) {
 }
 

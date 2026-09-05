@@ -143,7 +143,7 @@ void Engine::run() {
         renderer.endShadowPass(window.width, window.height);
 
         // PASS 2: Render Main Scene with Lighting, Materials, and PCF Soft Shadows
-        renderer.clear(0.08f, 0.09f, 0.13f, 1.0f);
+        renderer.clear(0.05f, 0.06f, 0.09f, 1.0f);
         float aspectRatio = window.getAspectRatio();
 
         // Render Platform
