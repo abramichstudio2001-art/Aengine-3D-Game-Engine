@@ -44,12 +44,23 @@ A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLEW, 
 
 ## Prerequisites
 
-On Ubuntu / Debian systems, install the required packages:
+### Linux (Ubuntu / Debian)
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y build-essential cmake libglfw3-dev libglew-dev libglm-dev libstb-dev
 ```
+
+### Windows (vcpkg / MinGW)
+
+On Windows, ensure CMake and a C++ compiler (Visual Studio C++ or MinGW-w64) are installed. You can install dependencies via `vcpkg`:
+
+```cmd
+vcpkg install glew glfw3 glm
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=[path_to_vcpkg]/scripts/buildsystems/vcpkg.cmake
+```
+
+> **DLL Resolution Note**: If Windows shows a missing DLL error (e.g. `glew32.dll` or `glfw3.dll` missing when launching `Aengine3D.exe`), ensure the dynamic libraries (`.dll`) are placed in the same directory as `Aengine3D.exe` (`build/Release/`) or added to your system `PATH`. The build script `run.bat` automatically handles copying DLLs placed in `build/`.
 
 ---
 
