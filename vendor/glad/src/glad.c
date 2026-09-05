@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <glad/glad.h>
+
+PFNGLCLEARPROC glad_glClear = NULL;
+PFNGLCLEARCOLORPROC glad_glClearColor = NULL;
+PFNGLVIEWPORTPROC glad_glViewport = NULL;
+PFNGLENABLEPROC glad_glEnable = NULL;
+PFNGLDISABLEPROC glad_glDisable = NULL;
+PFNGLCULLFACEPROC glad_glCullFace = NULL;
+PFNGLDEPTHFUNCPROC glad_glDepthFunc = NULL;
+PFNGLBLENDFUNCPROC glad_glBlendFunc = NULL;
+PFNGLGENBUFFERSPROC glad_glGenBuffers = NULL;
+PFNGLBINDBUFFERPROC glad_glBindBuffer = NULL;
+PFNGLBUFFERDATAPROC glad_glBufferData = NULL;
+PFNGLDELETEBUFFERSPROC glad_glDeleteBuffers = NULL;
+PFNGLGENVERTEXARRAYSPROC glad_glGenVertexArrays = NULL;
+PFNGLBINDVERTEXARRAYPROC glad_glBindVertexArray = NULL;
+PFNGLDELETEVERTEXARRAYSPROC glad_glDeleteVertexArrays = NULL;
+PFNGLENABLEVERTEXATTRIBARRAYPROC glad_glEnableVertexAttribArray = NULL;
+PFNGLVERTEXATTRIBPOINTERPROC glad_glVertexAttribPointer = NULL;
+PFNGLCREATESHADERPROC glad_glCreateShader = NULL;
+PFNGLSHADERSOURCEPROC glad_glShaderSource = NULL;
+PFNGLCOMPILESHADERPROC glad_glCompileShader = NULL;
+PFNGLGETSHADERIVPROC glad_glGetShaderiv = NULL;
+PFNGLGETSHADERINFOLOGPROC glad_glGetShaderInfoLog = NULL;
+PFNGLCREATEPROGRAMPROC glad_glCreateProgram = NULL;
+PFNGLATTACHSHADERPROC glad_glAttachShader = NULL;
+PFNGLLINKPROGRAMPROC glad_glLinkProgram = NULL;
+PFNGLGETPROGRAMIVPROC glad_glGetProgramiv = NULL;
+PFNGLGETPROGRAMINFOLOGPROC glad_glGetProgramInfoLog = NULL;
+PFNGLUSEPROGRAMPROC glad_glUseProgram = NULL;
+PFNGLDELETESHADERPROC glad_glDeleteShader = NULL;
+PFNGLDELETEPROGRAMPROC glad_glDeleteProgram = NULL;
+PFNGLGETUNIFORMLOCATIONPROC glad_glGetUniformLocation = NULL;
+PFNGLUNIFORM1IPROC glad_glUniform1i = NULL;
+PFNGLUNIFORM1FPROC glad_glUniform1f = NULL;
+PFNGLUNIFORM2FVPROC glad_glUniform2fv = NULL;
+PFNGLUNIFORM3FVPROC glad_glUniform3fv = NULL;
+PFNGLUNIFORM4FVPROC glad_glUniform4fv = NULL;
+PFNGLUNIFORMMATRIX4FVPROC glad_glUniformMatrix4fv = NULL;
+PFNGLGENTEXTURESPROC glad_glGenTextures = NULL;
+PFNGLBINDTEXTUREPROC glad_glBindTexture = NULL;
+PFNGLTEXIMAGE2DPROC glad_glTexImage2D = NULL;
+PFNGLTEXPARAMETERIPROC glad_glTexParameteri = NULL;
+PFNGLTEXPARAMETERFVPROC glad_glTexParameterfv = NULL;
+PFNGLACTIVETEXTUREPROC glad_glActiveTexture = NULL;
+PFNGLDELETETEXTURESPROC glad_glDeleteTextures = NULL;
+PFNGLGENFRAMEBUFFERSPROC glad_glGenFramebuffers = NULL;
+PFNGLBINDFRAMEBUFFERPROC glad_glBindFramebuffer = NULL;
+PFNGLFRAMEBUFFERTEXTURE2DPROC glad_glFramebufferTexture2D = NULL;
+PFNGLDRAWBUFFERPROC glad_glDrawBuffer = NULL;
+PFNGLREADBUFFERPROC glad_glReadBuffer = NULL;
+PFNGLCHECKFRAMEBUFFERSTATUSPROC glad_glCheckFramebufferStatus = NULL;
+PFNGLDELETEFRAMEBUFFERSPROC glad_glDeleteFramebuffers = NULL;
+PFNGLDRAWELEMENTSPROC glad_glDrawElements = NULL;
+PFNGLSCISSORPROC glad_glScissor = NULL;
+PFNGLGETATTRIBLOCATIONPROC glad_glGetAttribLocation = NULL;
+PFNGLREADPIXELSPROC glad_glReadPixels = NULL;
+PFNGLGETSTRINGPROC glad_glGetString = NULL;
+
+static void load_GL_version_3_3(GLADloadproc load) {
+    glad_glClear = (PFNGLCLEARPROC)load("glClear");
+    glad_glClearColor = (PFNGLCLEARCOLORPROC)load("glClearColor");
+    glad_glViewport = (PFNGLVIEWPORTPROC)load("glViewport");
+    glad_glEnable = (PFNGLENABLEPROC)load("glEnable");
+    glad_glDisable = (PFNGLDISABLEPROC)load("glDisable");
+    glad_glCullFace = (PFNGLCULLFACEPROC)load("glCullFace");
+    glad_glDepthFunc = (PFNGLDEPTHFUNCPROC)load("glDepthFunc");
+    glad_glBlendFunc = (PFNGLBLENDFUNCPROC)load("glBlendFunc");
+    glad_glGenBuffers = (PFNGLGENBUFFERSPROC)load("glGenBuffers");
+    glad_glBindBuffer = (PFNGLBINDBUFFERPROC)load("glBindBuffer");
+    glad_glBufferData = (PFNGLBUFFERDATAPROC)load("glBufferData");
+    glad_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)load("glDeleteBuffers");
+    glad_glGenVertexArrays = (PFNGLGENVERTEXARRAYSPROC)load("glGenVertexArrays");
+    glad_glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)load("glBindVertexArray");
+    glad_glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)load("glDeleteVertexArrays");
+    glad_glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)load("glEnableVertexAttribArray");
+    glad_glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)load("glVertexAttribPointer");
+    glad_glCreateShader = (PFNGLCREATESHADERPROC)load("glCreateShader");
+    glad_glShaderSource = (PFNGLSHADERSOURCEPROC)load("glShaderSource");
+    glad_glCompileShader = (PFNGLCOMPILESHADERPROC)load("glCompileShader");
+    glad_glGetShaderiv = (PFNGLGETSHADERIVPROC)load("glGetShaderiv");
+    glad_glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)load("glGetShaderInfoLog");
+    glad_glCreateProgram = (PFNGLCREATEPROGRAMPROC)load("glCreateProgram");
+    glad_glAttachShader = (PFNGLATTACHSHADERPROC)load("glAttachShader");
+    glad_glLinkProgram = (PFNGLLINKPROGRAMPROC)load("glLinkProgram");
+    glad_glGetProgramiv = (PFNGLGETPROGRAMIVPROC)load("glGetProgramiv");
+    glad_glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)load("glGetProgramInfoLog");
+    glad_glUseProgram = (PFNGLUSEPROGRAMPROC)load("glUseProgram");
+    glad_glDeleteShader = (PFNGLDELETESHADERPROC)load("glDeleteShader");
+    glad_glDeleteProgram = (PFNGLDELETEPROGRAMPROC)load("glDeleteProgram");
+    glad_glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)load("glGetUniformLocation");
+    glad_glUniform1i = (PFNGLUNIFORM1IPROC)load("glUniform1i");
+    glad_glUniform1f = (PFNGLUNIFORM1FPROC)load("glUniform1f");
+    glad_glUniform2fv = (PFNGLUNIFORM2FVPROC)load("glUniform2fv");
+    glad_glUniform3fv = (PFNGLUNIFORM3FVPROC)load("glUniform3fv");
+    glad_glUniform4fv = (PFNGLUNIFORM4FVPROC)load("glUniform4fv");
+    glad_glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)load("glUniformMatrix4fv");
+    glad_glGenTextures = (PFNGLGENTEXTURESPROC)load("glGenTextures");
+    glad_glBindTexture = (PFNGLBINDTEXTUREPROC)load("glBindTexture");
+    glad_glTexImage2D = (PFNGLTEXIMAGE2DPROC)load("glTexImage2D");
+    glad_glTexParameteri = (PFNGLTEXPARAMETERIPROC)load("glTexParameteri");
+    glad_glTexParameterfv = (PFNGLTEXPARAMETERFVPROC)load("glTexParameterfv");
+    glad_glActiveTexture = (PFNGLACTIVETEXTUREPROC)load("glActiveTexture");
+    glad_glDeleteTextures = (PFNGLDELETETEXTURESPROC)load("glDeleteTextures");
+    glad_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)load("glGenFramebuffers");
+    glad_glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)load("glBindFramebuffer");
+    glad_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)load("glFramebufferTexture2D");
+    glad_glDrawBuffer = (PFNGLDRAWBUFFERPROC)load("glDrawBuffer");
+    glad_glReadBuffer = (PFNGLREADBUFFERPROC)load("glReadBuffer");
+    glad_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)load("glCheckFramebufferStatus");
+    glad_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)load("glDeleteFramebuffers");
+    glad_glDrawElements = (PFNGLDRAWELEMENTSPROC)load("glDrawElements");
+    glad_glScissor = (PFNGLSCISSORPROC)load("glScissor");
+    glad_glGetAttribLocation = (PFNGLGETATTRIBLOCATIONPROC)load("glGetAttribLocation");
+    glad_glReadPixels = (PFNGLREADPIXELSPROC)load("glReadPixels");
+    glad_glGetString = (PFNGLGETSTRINGPROC)load("glGetString");
+}
+
+int gladLoadGLLoader(GLADloadproc load) {
+    load_GL_version_3_3(load);
+    return 1;
+}

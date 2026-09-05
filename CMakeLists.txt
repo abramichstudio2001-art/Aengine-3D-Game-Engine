@@ -4,19 +4,58 @@ project(Aengine3D LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(glm REQUIRED)
+include(FetchContent)
 
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/vendor/imgui)
+# Automatically download and compile GLFW3
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG        3.3.8
+)
+FetchContent_MakeAvailable(glfw)
+
+# Automatically download and compile GLM
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG        0.9.9.8
+)
+FetchContent_MakeAvailable(glm)
+
+# Automatically download ImGui
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG        v1.89.9
+)
+FetchContent_MakeAvailable(imgui)
+
+find_package(OpenGL REQUIRED)
+
+set(GLAD_DIR ${CMAKE_SOURCE_DIR}/vendor/glad)
+
+set(GLAD_SOURCES
+    ${GLAD_DIR}/src/glad.c
+)
+
+# Custom wrapper to include glad.h before glfw/opengl3 in imgui_impl_glfw.cpp
+set(IMGUI_GLFW_WRAPPER ${CMAKE_BINARY_DIR}/imgui_impl_glfw_glad.cpp)
+file(WRITE ${IMGUI_GLFW_WRAPPER}
+"#include <glad/glad.h>\n"
+"#include \"backends/imgui_impl_glfw.cpp\"\n"
+)
+
 set(IMGUI_SOURCES
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    ${IMGUI_GLFW_WRAPPER}
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
 
 set(ENGINE_SOURCES
@@ -33,33 +72,34 @@ set(ENGINE_SOURCES
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/src
-    ${IMGUI_DIR}
-    ${IMGUI_DIR}/backends
+    ${CMAKE_SOURCE_DIR}/vendor
+    ${GLAD_DIR}/include
+    ${imgui_SOURCE_DIR}
+    ${imgui_SOURCE_DIR}/backends
 )
 
 add_executable(Aengine3D
     ${ENGINE_SOURCES}
+    ${GLAD_SOURCES}
     ${IMGUI_SOURCES}
 )
 
+target_compile_definitions(Aengine3D PRIVATE IMGUI_IMPL_OPENGL_LOADER_GLAD)
+
 target_link_libraries(Aengine3D PRIVATE
     OpenGL::GL
-    GLEW::GLEW
     glfw
     glm::glm
 )
 
-# On Windows, statically link C/C++ runtimes when using MinGW and automatically copy runtime DLLs
-if(WIN32)
-    if(MINGW)
-        target_link_options(Aengine3D PRIVATE -static-libgcc -static-libstdc++)
-    endif()
+# Copy shaders directory to build executable directory post-build
+add_custom_command(TARGET Aengine3D POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/shaders
+        $<TARGET_FILE_DIR:Aengine3D>/shaders
+)
 
-    add_custom_command(TARGET Aengine3D POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_RUNTIME_DLLS:Aengine3D>
-            $<TARGET_FILE_DIR:Aengine3D>
-        COMMAND_EXPAND_LISTS
-        IGNORE_EXIT_CODE
-    )
+# On Windows, statically link C/C++ runtimes when using MinGW
+if(WIN32 AND MINGW)
+    target_link_options(Aengine3D PRIVATE -static-libgcc -static-libstdc++)
 endif()

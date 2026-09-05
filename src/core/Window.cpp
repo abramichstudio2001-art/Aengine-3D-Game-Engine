@@ -42,10 +42,8 @@ bool Window::init() {
     glfwSetWindowUserPointer(handle, this);
     glfwSetFramebufferSizeCallback(handle, framebuffer_size_callback);
 
-    glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-    if (err != GLEW_OK) {
-        std::cerr << "Failed to initialize GLEW: " << glewGetErrorString(err) << std::endl;
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD OpenGL loader" << std::endl;
         return false;
     }
 

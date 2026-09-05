@@ -1,6 +1,6 @@
 # Aengine-3D - C++ 3D Game Engine
 
-A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLEW, GLM, and Dear ImGui.
+A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLM, GLAD, and Dear ImGui.
 
 ![Engine Screenshot](screenshot.png)
 
@@ -8,12 +8,13 @@ A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLEW, 
 
 ## Features
 
-- **Modern 3D Graphics Pipeline**: Modern OpenGL (3.3 Core Profile) shader-based rendering with Blinn-Phong lighting and depth testing.
+- **Modern 3D Graphics Pipeline**: OpenGL 3.3 Core Profile shader-based rendering with Blinn-Phong lighting, ACES tone mapping, and depth testing.
 - **Dynamic Shadow Mapping**: Two-pass directional shadow mapping with 2048x2048 depth maps and Percentage-Closer Filtering (PCF) soft shadows.
 - **Material Subsystem**: Material definitions supporting ambient, diffuse, specular, and shininess properties (Emerald, Gold, Bronze, Slate Platform, etc.).
-- **3D Platform Scene**: Procedurally generated 3D platform with dynamic grid shading and interactive illuminated 3D objects casting soft shadows.
+- **3D Platform Scene**: Procedurally generated 3D platform with anti-aliased dynamic grid shading and interactive illuminated 3D objects casting soft shadows.
 - **Camera Subsystem**: 3D perspective camera with view/projection matrix generation and keyboard/mouse movement controls.
 - **Minimal User Interface**: Simple ImGui overlay displaying an FPS counter and nothing else.
+- **Zero External DLL Setup**: Dependencies (GLFW, GLM, glad, ImGui) are automatically downloaded and statically compiled by CMake on first build (`FetchContent`).
 - **Clean Architecture**: Modular C++ design separating Windowing, Camera, Shaders, ShadowMap, Geometry Meshes, Renderer, and UI.
 - **One-Click Launch Scripts**: Convenient `run.sh` and `run.bat` scripts to build and run automatically.
 - **Offscreen Verification Support**: Command-line support for offscreen headless rendering and frame screenshot capture.
@@ -23,13 +24,13 @@ A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLEW, 
 ## Directory Structure
 
 ```text
-├── CMakeLists.txt        # CMake build configuration
+├── CMakeLists.txt        # CMake build configuration (auto-fetches GLFW & GLM)
 ├── README.md             # Documentation
 ├── run.sh                # Linux / macOS build and run script
 ├── run.bat               # Windows build and run script
 ├── shaders/              # GLSL shader files
 │   ├── default.vert      # Vertex shader (positions, normals, shadow light-space matrix)
-│   ├── default.frag      # Fragment shader (Blinn-Phong lighting, materials, PCF soft shadows)
+│   ├── default.frag      # Fragment shader (Blinn-Phong lighting, ACES tone mapping, soft shadows)
 │   ├── shadow.vert       # Shadow pass vertex shader
 │   └── shadow.frag       # Shadow pass fragment shader
 ├── src/
@@ -37,42 +38,19 @@ A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLEW, 
 │   ├── core/             # Engine core systems (Window, Camera, Engine game loop)
 │   ├── renderer/         # Graphics systems (Shader, Mesh, Material, ShadowMap, Renderer)
 │   └── ui/               # User interface overlay (Dear ImGui)
-└── vendor/               # Third-party dependencies (Dear ImGui)
+└── vendor/               # Embedded libraries (Dear ImGui, glad)
 ```
-
----
-
-## Prerequisites
-
-### Linux (Ubuntu / Debian)
-
-```bash
-sudo apt-get update
-sudo apt-get install -y build-essential cmake libglfw3-dev libglew-dev libglm-dev libstb-dev
-```
-
-### Windows (vcpkg / MinGW)
-
-On Windows, ensure CMake and a C++ compiler (Visual Studio C++ or MinGW-w64) are installed. You can install dependencies via `vcpkg`:
-
-```cmd
-vcpkg install glew glfw3 glm
-cmake -B build -DCMAKE_TOOLCHAIN_FILE=[path_to_vcpkg]/scripts/buildsystems/vcpkg.cmake
-```
-
-> **DLL Resolution Note**: If Windows shows a missing DLL error (e.g. `glew32.dll`, `glfw3.dll`, or toolchain runtime dynamic libraries when launching `Aengine3D.exe`):
-> 1. Launch the application using `run.bat`, which automatically prepends MSYS2 (`C:\msys64\mingw64\bin`, `C:\msys64\ucrt64\bin`), MinGW, and build folders to `PATH` and copies required `.dll` files directly into the executable folder.
-> 2. Alternatively, copy any required `.dll` files from your compiler/package manager's `bin/` folder directly into the output folder containing `Aengine3D.exe` (`build/Release/`).
 
 ---
 
 ## Quick Start (Run Scripts)
 
-You can build and launch the engine with a single command:
+All dependencies are **automatically fetched and compiled statically by CMake**. You don't need to manually install or copy external DLLs!
 
 ### Linux / macOS
 
 ```bash
+chmod +x run.sh
 ./run.sh
 ```
 
@@ -86,14 +64,14 @@ run.bat
 
 ## Manual Building & Running
 
-If you prefer using CMake manually:
+If you prefer using CMake directly:
 
 ```bash
-# Configure CMake
+# Configure CMake (downloads GLFW and GLM automatically on first run)
 cmake -B build
 
-# Build the executable
-cmake --build build
+# Build the executable statically
+cmake --build build --config Release
 
 # Run the engine
 ./build/Aengine3D

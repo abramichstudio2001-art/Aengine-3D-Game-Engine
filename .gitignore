@@ -1,6 +1,11 @@
+# Build directory
 build/
-*.png
-*.o
-*.a
-*.so
-.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.user
+
+# Keep screenshot.png for README documentation
+!screenshot.png
