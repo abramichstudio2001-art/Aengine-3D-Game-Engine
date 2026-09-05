@@ -49,8 +49,12 @@ target_link_libraries(Aengine3D PRIVATE
     glm::glm
 )
 
-# On Windows, automatically copy runtime DLLs (GLEW, GLFW, MinGW runtime) to binary directory post-build
+# On Windows, statically link C/C++ runtimes when using MinGW and automatically copy runtime DLLs
 if(WIN32)
+    if(MINGW)
+        target_link_options(Aengine3D PRIVATE -static-libgcc -static-libstdc++)
+    endif()
+
     add_custom_command(TARGET Aengine3D POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_RUNTIME_DLLS:Aengine3D>

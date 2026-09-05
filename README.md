@@ -60,7 +60,9 @@ vcpkg install glew glfw3 glm
 cmake -B build -DCMAKE_TOOLCHAIN_FILE=[path_to_vcpkg]/scripts/buildsystems/vcpkg.cmake
 ```
 
-> **DLL Resolution Note**: If Windows shows a missing DLL error (e.g. `glew32.dll` or `glfw3.dll` missing when launching `Aengine3D.exe`), ensure the dynamic libraries (`.dll`) are placed in the same directory as `Aengine3D.exe` (`build/Release/`) or added to your system `PATH`. The build script `run.bat` automatically handles copying DLLs placed in `build/`.
+> **DLL Resolution Note**: If Windows shows a missing DLL error (e.g. `glew32.dll` or `glfw3.dll` missing when launching `Aengine3D.exe`):
+> 1. Launch the application using `run.bat`, which automatically locates dependency DLLs in your MinGW/MSYS2 toolchain or `vcpkg` directory and sets up the local runtime `PATH`.
+> 2. Alternatively, copy any required `.dll` files from your compiler or package manager's `bin/` directory directly into the directory containing `Aengine3D.exe` (`build/Release/`).
 
 ---
 

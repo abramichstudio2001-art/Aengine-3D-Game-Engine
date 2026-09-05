@@ -6,14 +6,26 @@ if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 cmake --build build --config Release
 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
-rem Copy any DLLs from build root or vcpkg/deps into output directory if present
+rem Prepend build output folders and standard MSYS2 / MinGW bin paths to PATH
+set PATH=%CD%\build;%CD%\build\Release;%CD%\build\Debug;C:\msys64\mingw64\bin;C:\MinGW\bin;%PATH%
+
+rem Copy any DLLs from build root or common MinGW/MSYS2 locations if available
+for %%D in (C:\msys64\mingw64\bin C:\MinGW\bin) do (
+    if exist "%%D\glew32.dll" (
+        if exist build\Release xcopy /y /d "%%D\glew32.dll" build\Release\ >nul 2>&1
+        if exist build\Debug xcopy /y /d "%%D\glew32.dll" build\Debug\ >nul 2>&1
+        if exist build xcopy /y /d "%%D\glew32.dll" build\ >nul 2>&1
+    )
+    if exist "%%D\glfw3.dll" (
+        if exist build\Release xcopy /y /d "%%D\glfw3.dll" build\Release\ >nul 2>&1
+        if exist build\Debug xcopy /y /d "%%D\glfw3.dll" build\Debug\ >nul 2>&1
+        if exist build xcopy /y /d "%%D\glfw3.dll" build\ >nul 2>&1
+    )
+)
+
 if exist build\*.dll (
-    if exist build\Release (
-        xcopy /y /d build\*.dll build\Release\ >nul 2>&1
-    )
-    if exist build\Debug (
-        xcopy /y /d build\*.dll build\Debug\ >nul 2>&1
-    )
+    if exist build\Release xcopy /y /d build\*.dll build\Release\ >nul 2>&1
+    if exist build\Debug xcopy /y /d build\*.dll build\Debug\ >nul 2>&1
 )
 
 echo === Running Aengine 3D Game Engine ===
