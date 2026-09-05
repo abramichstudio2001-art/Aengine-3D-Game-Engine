@@ -1,9 +1,11 @@
 #include "core/Engine.h"
+#include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <vector>
 #include <cstring>
 
+#define STBIW_ASSERT(x) ((void)0)
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image_write.h>
 
@@ -95,19 +97,34 @@ void Engine::updateTiming() {
 void Engine::saveScreenshot(const std::string& filename) {
     int w = window.width;
     int h = window.height;
-    std::vector<unsigned char> pixels(3 * w * h);
-    glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
+    if (w <= 0 || h <= 0) return;
 
-    std::vector<unsigned char> flipped(3 * w * h);
+    size_t rgbaSize = static_cast<size_t>(w) * static_cast<size_t>(h) * 4;
+    size_t rgbSize = static_cast<size_t>(w) * static_cast<size_t>(h) * 3;
+
+    unsigned char* pixels = new unsigned char[rgbaSize];
+    unsigned char* flipped = new unsigned char[rgbSize];
+
+    glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
     for (int y = 0; y < h; ++y) {
-        std::memcpy(&flipped[(h - 1 - y) * w * 3], &pixels[y * w * 3], w * 3);
+        for (int x = 0; x < w; ++x) {
+            size_t srcIdx = (static_cast<size_t>(y) * w + x) * 4;
+            size_t dstIdx = (static_cast<size_t>(h - 1 - y) * w + x) * 3;
+            flipped[dstIdx + 0] = pixels[srcIdx + 0];
+            flipped[dstIdx + 1] = pixels[srcIdx + 1];
+            flipped[dstIdx + 2] = pixels[srcIdx + 2];
+        }
     }
 
-    if (stbi_write_png(filename.c_str(), w, h, 3, flipped.data(), w * 3)) {
+    if (stbi_write_png(filename.c_str(), w, h, 3, flipped, w * 3)) {
         std::cout << "Successfully saved screenshot to: " << filename << std::endl;
     } else {
         std::cerr << "Failed to write screenshot to: " << filename << std::endl;
     }
+
+    delete[] pixels;
+    delete[] flipped;
 }
 
 void Engine::run() {
