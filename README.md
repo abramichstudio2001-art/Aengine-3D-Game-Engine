@@ -1,100 +1,87 @@
-# Aengine-3D - C++ 3D Game Engine
+# Aengine 3D Game Engine (Release: Alpha 1)
 
-A modern, lightweight 3D Game Engine written in C++17 using OpenGL, GLFW, GLM, GLAD, and Dear ImGui.
+A modern, high-performance C++ 3D Game Engine built with OpenGL 3.3 Core Profile, GLFW3, GLM, GLAD, and Dear ImGui. Designed for 3D platform environments, lightweight real-time graphics, and minimal overhead.
 
 ![Engine Screenshot](screenshot.png)
 
 ---
 
-## Features
+## Key Features
 
-- **Modern 3D Graphics Pipeline**: OpenGL 3.3 Core Profile shader-based rendering with Blinn-Phong lighting, ACES tone mapping, and depth testing.
-- **Dynamic Shadow Mapping**: Two-pass directional shadow mapping with 2048x2048 depth maps and Percentage-Closer Filtering (PCF) soft shadows.
-- **Material Subsystem**: Material definitions supporting ambient, diffuse, specular, and shininess properties (Emerald, Gold, Bronze, Slate Platform, etc.).
-- **3D Platform Scene**: Procedurally generated 3D platform with anti-aliased dynamic grid shading and interactive illuminated 3D objects casting soft shadows.
-- **Camera Subsystem**: 3D perspective camera with view/projection matrix generation and keyboard/mouse movement controls.
-- **Minimal User Interface**: Simple ImGui overlay displaying an FPS counter and nothing else.
-- **Zero External DLL Setup**: Dependencies (GLFW, GLM, glad, ImGui) are automatically downloaded and statically compiled by CMake on first build (`FetchContent`).
-- **Clean Architecture**: Modular C++ design separating Windowing, Camera, Shaders, ShadowMap, Geometry Meshes, Renderer, and UI.
-- **One-Click Launch Scripts**: Convenient `run.sh` and `run.bat` scripts to build and run automatically.
-- **Offscreen Verification Support**: Command-line support for offscreen headless rendering and frame screenshot capture.
+- **Release Version**: Alpha 1
+- **Platform Scene**: Procedural 3D platform with anti-aliased dynamic grid lines and interactive material-lit 3D primitives (Emerald, Gold, Vibrant Orange, Slate Platform).
+- **Minimal FPS UI**: Clean, non-intrusive Dear ImGui overlay displaying real-time frames per second (FPS) at top-left.
+- **Lighting & Shadows**:
+  - Blinn-Phong specular lighting and directional sun positioning.
+  - Two-pass directional depth shadow map (2048x2048 FBO) with 16-sample Percentage-Closer Filtering (PCF) soft shadows.
+  - ACES filmic tone mapping and 2.2 gamma correction in GLSL shaders.
+- **Camera Navigation**: Smooth 3D perspective camera with keyboard navigation (`WASD` for planar movement, `E`/`Q` for elevation).
+- **Zero-Dependency Automated Build**:
+  - Uses CMake `FetchContent` to download and statically link GLFW, GLM, and Dear ImGui automatically on first configure.
+  - Cross-platform support for Windows (MSVC / MinGW) and Linux / macOS.
+  - Auto-detection for MSYS2/MinGW PATH setup in `run.bat` to eliminate runtime DLL entry point errors.
 
 ---
 
 ## Directory Structure
 
 ```text
-├── CMakeLists.txt        # CMake build configuration (auto-fetches GLFW & GLM)
-├── README.md             # Documentation
-├── run.sh                # Linux / macOS build and run script
-├── run.bat               # Windows build and run script
-├── shaders/              # GLSL shader files
-│   ├── default.vert      # Vertex shader (positions, normals, shadow light-space matrix)
-│   ├── default.frag      # Fragment shader (Blinn-Phong lighting, ACES tone mapping, soft shadows)
-│   ├── shadow.vert       # Shadow pass vertex shader
-│   └── shadow.frag       # Shadow pass fragment shader
-├── src/
-│   ├── main.cpp          # Entry point
-│   ├── core/             # Engine core systems (Window, Camera, Engine game loop)
-│   ├── renderer/         # Graphics systems (Shader, Mesh, Material, ShadowMap, Renderer)
-│   └── ui/               # User interface overlay (Dear ImGui)
-└── vendor/               # Embedded libraries (Dear ImGui, glad)
+Aengine3D/
+├── CMakeLists.txt          # Root CMake build configuration
+├── README.md               # Documentation and usage guide
+├── run.bat                 # One-click Windows auto-detect, build & run script
+├── run.sh                  # One-click Linux/macOS auto-build & run script
+├── screenshot.png          # Visual preview render of Alpha 1 release
+├── shaders/                # GLSL shader source code
+│   ├── default.vert        # Main scene vertex shader
+│   ├── default.frag        # Blinn-Phong & PCF shadow fragment shader
+│   ├── shadow.vert         # Shadow pass vertex shader
+│   └── shadow.frag         # Shadow depth fragment shader
+├── src/                    # C++ Engine Core Source Code
+│   ├── main.cpp            # Entry point
+│   ├── core/               # Window, Camera, Engine game loop
+│   ├── renderer/           # Shader, Mesh, Material, ShadowMap, Renderer
+│   └── ui/                 # Dear ImGui minimal FPS UI overlay
+└── vendor/                 # GLAD GL loader and STB image headers
 ```
 
 ---
 
-## Quick Start (Run Scripts)
+## Quick Start (Build & Run)
 
-All dependencies are **automatically fetched and compiled statically by CMake**. You don't need to manually install or copy external DLLs!
+### Windows (One-Click)
+Double-click `run.bat` or run in Command Prompt:
+```cmd
+run.bat
+```
+*`run.bat` automatically checks for CMake, detects MSYS2/MinGW environments, configures, compiles `build/Release/Aengine3D.exe`, and launches the engine.*
 
-### Linux / macOS
-
+### Linux / macOS (One-Click)
+Make `run.sh` executable and launch:
 ```bash
 chmod +x run.sh
 ./run.sh
 ```
 
-### Windows
+---
 
-```cmd
-run.bat
-```
+## Controls
+
+| Key | Action |
+| --- | --- |
+| `W` | Move camera forward |
+| `S` | Move camera backward |
+| `A` | Strafe camera left |
+| `D` | Strafe camera right |
+| `E` | Elevate camera up |
+| `Q` | Lower camera down |
+| `ESC` | Exit engine |
 
 ---
 
-## Manual Building & Running
+## Offscreen Render / Headless Screenshot Mode
 
-If you prefer using CMake directly:
-
+To generate an offscreen render frame and exit (useful for testing or CI pipelines):
 ```bash
-# Configure CMake (downloads GLFW and GLM automatically on first run)
-cmake -B build
-
-# Build the executable statically
-cmake --build build --config Release
-
-# Run the engine
-./build/Aengine3D
+./build/Aengine3D --screenshot output.png
 ```
-
----
-
-## Controls & Usage
-
-- **W / A / S / D**: Move camera horizontally (forward, left, backward, right)
-- **E / Q**: Move camera vertically (up / down)
-- **Esc**: Exit the engine application
-
-### Offscreen / Headless Mode & Screenshots
-
-To run the engine in a headless environment (or capture an automated screenshot):
-
-```bash
-LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a ./run.sh --screenshot screenshot.png
-```
-
----
-
-## License
-
-This project is open-source.
