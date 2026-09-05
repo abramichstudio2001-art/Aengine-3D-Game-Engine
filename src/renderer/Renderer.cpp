@@ -1,4 +1,5 @@
 #include "renderer/Renderer.h"
+#include <glad/glad.h>
 
 Renderer::Renderer()
     : lightPos(glm::vec3(6.5f, 11.0f, 5.5f)),
@@ -10,8 +11,7 @@ void Renderer::init() {
     shadowMap.init();
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    glDisable(GL_CULL_FACE);
 }
 
 void Renderer::clear(float r, float g, float b, float a) const {

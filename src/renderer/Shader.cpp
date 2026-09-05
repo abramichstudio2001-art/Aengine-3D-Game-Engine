@@ -9,18 +9,26 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-    try {
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
-        std::stringstream vShaderStream, fShaderStream;
-        vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();
-        vShaderFile.close();
-        fShaderFile.close();
-        vertexCode = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
-    } catch (std::ifstream::failure &e) {
-        std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+    vShaderFile.open(vertexPath);
+    fShaderFile.open(fragmentPath);
+    if (!vShaderFile.is_open() || !fShaderFile.is_open()) {
+        std::string fallbackVPath = std::string("../") + vertexPath;
+        std::string fallbackFPath = std::string("../") + fragmentPath;
+        vShaderFile.clear();
+        fShaderFile.clear();
+        vShaderFile.open(fallbackVPath);
+        fShaderFile.open(fallbackFPath);
+    }
+    std::stringstream vShaderStream, fShaderStream;
+    vShaderStream << vShaderFile.rdbuf();
+    fShaderStream << fShaderFile.rdbuf();
+    vShaderFile.close();
+    fShaderFile.close();
+    vertexCode = vShaderStream.str();
+    fragmentCode = fShaderStream.str();
+
+    if (vertexCode.empty() || fragmentCode.empty()) {
+        std::cerr << "ERROR::SHADER::FILE_NOT_FOUND: " << vertexPath << " or " << fragmentPath << std::endl;
     }
 
     const char* vShaderCode = vertexCode.c_str();

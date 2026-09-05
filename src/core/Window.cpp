@@ -47,6 +47,7 @@ bool Window::init() {
         return false;
     }
 
+    glfwSwapInterval(1);
     glViewport(0, 0, width, height);
     return true;
 }
