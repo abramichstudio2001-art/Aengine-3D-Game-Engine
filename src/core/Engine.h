@@ -31,6 +31,7 @@ private:
     UI ui;
 
     std::unique_ptr<Shader> shader;
+    std::unique_ptr<Shader> shadowShader;
     std::unique_ptr<Mesh> platformMesh;
     std::unique_ptr<Mesh> cubeMesh;
 

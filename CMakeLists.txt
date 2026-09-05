@@ -27,6 +27,7 @@ set(ENGINE_SOURCES
     src/renderer/Shader.cpp
     src/renderer/Mesh.cpp
     src/renderer/Renderer.cpp
+    src/renderer/ShadowMap.cpp
     src/ui/UI.cpp
 )
 

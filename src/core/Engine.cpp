@@ -9,7 +9,7 @@
 
 Engine::Engine()
     : window(1280, 720, "3D Game Engine"),
-      camera(glm::vec3(0.0f, 4.0f, 8.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -25.0f),
+      camera(glm::vec3(0.0f, 5.0f, 9.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -25.0f),
       deltaTime(0.0f),
       lastFrame(0.0f),
       currentFps(0.0f),
@@ -41,6 +41,7 @@ bool Engine::init() {
 
     try {
         shader = std::make_unique<Shader>("shaders/default.vert", "shaders/default.frag");
+        shadowShader = std::make_unique<Shader>("shaders/shadow.vert", "shaders/shadow.frag");
     } catch (const std::exception& e) {
         std::cerr << "Failed to load shaders: " << e.what() << std::endl;
         return false;
@@ -49,7 +50,7 @@ bool Engine::init() {
     // Create 3D Platform Mesh (Width: 12, Depth: 12, Height: 0.4)
     platformMesh = std::make_unique<Mesh>(Mesh::createPlatform(12.0f, 12.0f, 0.4f));
 
-    // Create a 3D Cube Mesh sitting on top of the platform
+    // Create 3D Cube Mesh
     cubeMesh = std::make_unique<Mesh>(Mesh::createCube(1.5f));
 
     lastFrame = static_cast<float>(glfwGetTime());
@@ -82,7 +83,7 @@ void Engine::updateTiming() {
     frameCount++;
     totalFramesRendered++;
     fpsTimer += deltaTime;
-    if (fpsTimer >= 0.2f || currentFps == 0.0f) { // Rapid FPS calculation for early frames
+    if (fpsTimer >= 0.2f || currentFps == 0.0f) {
         if (fpsTimer > 0.0f) {
             currentFps = static_cast<float>(frameCount) / fpsTimer;
         }
@@ -114,22 +115,50 @@ void Engine::run() {
         updateTiming();
         processInput();
 
-        renderer.clear(0.08f, 0.09f, 0.13f, 1.0f);
+        float time = static_cast<float>(glfwGetTime());
 
+        // Define scene object transformations
+        glm::mat4 platformModel = glm::mat4(1.0f);
+
+        glm::mat4 mainCubeModel = glm::mat4(1.0f);
+        mainCubeModel = glm::translate(mainCubeModel, glm::vec3(0.0f, 0.95f, 0.0f));
+        mainCubeModel = glm::rotate(mainCubeModel, time * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+        glm::mat4 emeraldCubeModel = glm::mat4(1.0f);
+        emeraldCubeModel = glm::translate(emeraldCubeModel, glm::vec3(-2.8f, 0.65f, 1.2f));
+        emeraldCubeModel = glm::rotate(emeraldCubeModel, time * -0.4f, glm::vec3(0.0f, 1.0f, 0.0f));
+        emeraldCubeModel = glm::scale(emeraldCubeModel, glm::vec3(0.6f));
+
+        glm::mat4 goldCubeModel = glm::mat4(1.0f);
+        goldCubeModel = glm::translate(goldCubeModel, glm::vec3(2.5f, 0.8f, -1.5f));
+        goldCubeModel = glm::rotate(goldCubeModel, time * 0.7f, glm::vec3(1.0f, 1.0f, 0.0f));
+        goldCubeModel = glm::scale(goldCubeModel, glm::vec3(0.8f));
+
+        // PASS 1: Render Depth to Shadow Map
+        renderer.beginShadowPass(*shadowShader);
+        renderer.renderMeshToShadowMap(*platformMesh, *shadowShader, platformModel);
+        renderer.renderMeshToShadowMap(*cubeMesh, *shadowShader, mainCubeModel);
+        renderer.renderMeshToShadowMap(*cubeMesh, *shadowShader, emeraldCubeModel);
+        renderer.renderMeshToShadowMap(*cubeMesh, *shadowShader, goldCubeModel);
+        renderer.endShadowPass(window.width, window.height);
+
+        // PASS 2: Render Main Scene with Lighting, Materials, and PCF Soft Shadows
+        renderer.clear(0.08f, 0.09f, 0.13f, 1.0f);
         float aspectRatio = window.getAspectRatio();
 
-        // 1. Render Platform (Slate grey platform with grid shader effect)
-        glm::mat4 platformModel = glm::mat4(1.0f);
-        platformModel = glm::translate(platformModel, glm::vec3(0.0f, 0.0f, 0.0f));
-        renderer.renderMesh(*platformMesh, *shader, camera, aspectRatio, platformModel, glm::vec3(0.35f, 0.45f, 0.55f), true);
+        // Render Platform
+        renderer.renderMeshWithShadows(*platformMesh, *shader, camera, aspectRatio, platformModel, Material::SlatePlatform(), true);
 
-        // 2. Render 3D Cube sitting on platform
-        glm::mat4 cubeModel = glm::mat4(1.0f);
-        cubeModel = glm::translate(cubeModel, glm::vec3(0.0f, 0.95f, 0.0f));
-        cubeModel = glm::rotate(cubeModel, static_cast<float>(glfwGetTime()) * 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
-        renderer.renderMesh(*cubeMesh, *shader, camera, aspectRatio, cubeModel, glm::vec3(0.9f, 0.4f, 0.2f), false);
+        // Render Main Cube (Vibrant Orange Material)
+        renderer.renderMeshWithShadows(*cubeMesh, *shader, camera, aspectRatio, mainCubeModel, Material::VibrantOrange(), false);
 
-        // 3. Render Minimal UI Overlay (FPS only)
+        // Render Emerald Cube
+        renderer.renderMeshWithShadows(*cubeMesh, *shader, camera, aspectRatio, emeraldCubeModel, Material::Emerald(), false);
+
+        // Render Gold Cube
+        renderer.renderMeshWithShadows(*cubeMesh, *shader, camera, aspectRatio, goldCubeModel, Material::Gold(), false);
+
+        // PASS 3: Render Minimal UI Overlay (FPS ONLY)
         ui.beginFrame();
         ui.render(currentFps);
         ui.endFrame();
