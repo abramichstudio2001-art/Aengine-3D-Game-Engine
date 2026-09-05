@@ -5,18 +5,47 @@ echo ===================================================
 echo   Aengine 3D Game Engine - Auto Build & Run Script
 echo ===================================================
 
-:: Step 1: Check prerequisites
-echo [1/4] Checking prerequisites...
+:: Step 1: Detect CMake and fix DLL environment PATH
+echo [1/4] Checking CMake and environment runtime PATH...
+
+set "CMAKE_CMD="
+
+:: Check if cmake is already in PATH
+where cmake >nul 2>nul
+if %ERRORLEVEL% EQU 0 (
+    for /f "delims=" %%I in ('where cmake') do (
+        if not defined CMAKE_CMD (
+            set "CMAKE_EXE=%%I"
+            set "CMAKE_DIR=%%~dpI"
+        )
+    )
+)
+
+:: Auto-detect common MSYS2 / CMake locations if not found or to prioritize MSYS2 DLL environment
+if exist "C:\msys64\ucrt64\bin\cmake.exe" (
+    set "MSYS_BIN=C:\msys64\ucrt64\bin"
+    set "PATH=C:\msys64\ucrt64\bin;!PATH!"
+) else if exist "C:\msys64\mingw64\bin\cmake.exe" (
+    set "MSYS_BIN=C:\msys64\mingw64\bin"
+    set "PATH=C:\msys64\mingw64\bin;!PATH!"
+) else if exist "C:\msys64\clang64\bin\cmake.exe" (
+    set "MSYS_BIN=C:\msys64\clang64\bin"
+    set "PATH=C:\msys64\clang64\bin;!PATH!"
+) else if exist "C:\Program Files\CMake\bin\cmake.exe" (
+    set "PATH=C:\Program Files\CMake\bin;!PATH!"
+) else if defined CMAKE_DIR (
+    set "PATH=!CMAKE_DIR!;!PATH!"
+)
+
 where cmake >nul 2>nul
 if %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] 'cmake' was not found in PATH!
-    echo Please install CMake from https://cmake.org/download/ and add it to system PATH.
-    echo Exiting...
+    echo [ERROR] 'cmake' was not found in PATH or standard MSYS2/CMake directories!
+    echo Please install CMake or MSYS2 (https://www.msys2.org/) and add it to PATH.
     pause
     exit /b 1
 )
 
-echo [OK] CMake is available.
+echo [OK] CMake environment initialized.
 
 :: Step 2: Configure project and download dependencies via FetchContent
 echo [2/4] Configuring project and downloading dependencies (GLFW, GLM, ImGui)...
